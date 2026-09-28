@@ -1,0 +1,40 @@
+# Continuous Integration workflow for the Task Manager API.
+#
+# This workflow automatically installs dependencies and runs the
+# Pytest test suite whenever code is pushed or a pull request is
+# opened/updated. If any test fails, the workflow fails.
+
+name: CI
+
+"on":
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Get the repository code onto the runner
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install the required Python version
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Step 3: Install project dependencies from requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Step 4: Run the automated test suite.
+      # If any test fails, pytest exits non-zero and this step (and the job) fails.
+      - name: Run tests with Pytest
+        run: pytest -v
